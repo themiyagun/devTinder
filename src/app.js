@@ -1,5 +1,6 @@
 const express = require("express");
 const connectDB = require("./config/database");
+const User = require("./models/user");
 
 const app = express(); // create express js application
 
@@ -58,6 +59,22 @@ const app = express(); // create express js application
 
 //   res.send("Deleted a user");
 // });
+
+app.post("/signup", async (req, res) => {
+  const user = new User({
+    firstName: "themi",
+    lastName: "Gunasekara",
+    emailId: "temi@123.com",
+    password: "temi123",
+  });
+
+  try {
+    await user.save();
+    res.send("user added success");
+  } catch (error) {
+    res.status(400).send("error while adding user" + error.message);
+  }
+});
 
 connectDB()
   .then(() => {
