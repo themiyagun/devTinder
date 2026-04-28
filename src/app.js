@@ -4,6 +4,8 @@ const User = require("./models/user");
 
 const app = express(); // create express js application
 
+app.use(express.json()); // me api eken thamai ena req eka json wlata convert krnne
+
 // const { adminAuth } = require("./middleware/auth");
 // const { userAuth } = require("./middleware/auth");
 
@@ -61,12 +63,9 @@ const app = express(); // create express js application
 // });
 
 app.post("/signup", async (req, res) => {
-  const user = new User({
-    firstName: "themi",
-    lastName: "Gunasekara",
-    emailId: "temi@123.com",
-    password: "temi123",
-  });
+
+  console.log(req.body)
+  const user = new User(req.body);
 
   try {
     await user.save();
