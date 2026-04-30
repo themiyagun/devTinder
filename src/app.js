@@ -3,11 +3,13 @@ const connectDB = require("./config/database");
 const User = require("./models/user");
 const { validateSignUpData } = require("./utills/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const app = express(); // create express js application
 
 app.use(express.json()); // me api eken thamai ena req eka json wlata convert krnne
-
+app.use(cookieParser());
 // const { adminAuth } = require("./middleware/auth");
 // const { userAuth } = require("./middleware/auth");
 
@@ -76,7 +78,6 @@ app.post("/signup", async (req, res) => {
     //encript the password
 
     const hash = bcrypt.hashSync(password, 10);
-    console.log(hash);
 
     // ///////
     const user = new User({
@@ -105,6 +106,18 @@ app.post("/login", async (req, res) => {
 
       const isPasswordMatch = await bcrypt.compare(password, user.password);
       if (isPasswordMatch) {
+        //Create JWT Token
+
+        const token = await jwt.sign({ _id: user._id }, "ThemiyaPaka");
+        console.log(token);
+
+        // ///////////////
+
+        //Add the token to cookie and send response back to the user
+
+        res.cookie("token", token);
+
+        // ///////////////////
         res.send("login success");
       } else {
         throw new Error("invalid password");
@@ -115,6 +128,32 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+
+    const { token } = cookies;
+
+    if (!token) {
+      throw new Error("Invalid token");
+    }
+
+    const decoded = await jwt.verify(token, "ThemiyaPaka");
+
+    const { _id } = decoded;
+
+    console.log("Logged In User is " + _id);
+
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    res.send(user);
+  } catch (error) {
+    res.status(400).send("Error while login " + error.message);
+  }
+});
 app.get("/user", async (req, res) => {
   const userEmail = req.body.emailId;
 
