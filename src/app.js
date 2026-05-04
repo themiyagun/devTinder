@@ -50,13 +50,15 @@ app.post("/login", async (req, res) => {
     } else {
       //compare the password
 
-      const isPasswordMatch = await bcrypt.compare(password, user.password);
+      const isPasswordMatch = await user.validatePassword(password);
       if (isPasswordMatch) {
         //Create JWT Token
 
-        const token = await jwt.sign({ _id: user._id }, "ThemiyaPaka", {
-          expiresIn: "1d",
-        });
+        // const token = await jwt.sign({ _id: user._id }, "ThemiyaPaka", {
+        //   expiresIn: "1d",
+        // });
+
+        const token = await user.getJWT();
         console.log(token);
 
         // ///////////////
