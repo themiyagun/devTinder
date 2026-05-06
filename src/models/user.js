@@ -83,6 +83,11 @@ userSchema.methods.getJWT = async function () {
 
   return token;
 };
+
+//indexes use for fast retrieval of data from the database
+userSchema.index({ firstName: 1, lastName: 1 });
+
+//
 userSchema.methods.validatePassword = async function (passwordInputByUser) {
   const user = this;
   const passwordHash = user.password;
