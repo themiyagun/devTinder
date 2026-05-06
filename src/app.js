@@ -12,92 +12,13 @@ const app = express(); // create express js application
 app.use(express.json()); // me api eken thamai ena req eka json wlata convert krnne
 app.use(cookieParser());
 
-app.post("/signup", async (req, res) => {
-  const { firstName, lastName, emailId, password } = req.body;
+const appRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/request");
 
-  try {
-    // console.log(req.body);
-
-    //validate request data
-    validateSignUpData(req);
-
-    //encript the password
-
-    const hash = bcrypt.hashSync(password, 10);
-
-    // ///////
-    const user = new User({
-      firstName,
-      lastName,
-      emailId,
-      password: hash,
-    });
-    await user.save();
-    res.send("user added success");
-  } catch (error) {
-    res.status(400).send("ERROR " + error.message);
-  }
-});
-
-app.post("/login", async (req, res) => {
-  const { emailId, password } = req.body;
-
-  try {
-    //check whether user exist in DB
-    const user = await User.findOne({ emailId: emailId });
-    if (!user) {
-      throw new Error("user not found");
-    } else {
-      //compare the password
-
-      const isPasswordMatch = await user.validatePassword(password);
-      if (isPasswordMatch) {
-        //Create JWT Token
-
-        // const token = await jwt.sign({ _id: user._id }, "ThemiyaPaka", {
-        //   expiresIn: "1d",
-        // });
-
-        const token = await user.getJWT();
-        console.log(token);
-
-        // ///////////////
-
-        //Add the token to cookie and send response back to the user
-
-        res.cookie("token", token);
-
-        // ///////////////////
-        res.send("login success");
-      } else {
-        throw new Error("invalid password");
-      }
-    }
-  } catch (error) {
-    res.status(400).send("Error while login " + error.message);
-  }
-});
-
-app.get("/profile", userAuth, async (req, res) => {
-  try {
-    const user = req.user;
-    console.log(user);
-    res.send(user);
-  } catch (error) {
-    res.status(400).send("Error while login " + error.message);
-  }
-});
-
-app.post("/sendConnectionRquest", userAuth, (req, res) => {
-  try {
-    const user = req.user;
-    res.send(user.firstName + " connection request sent successfully");
-  } catch (error) {
-    res
-      .status(400)
-      .send("Error while sending connection request " + error.message);
-  }
-});
+app.use("/", appRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
 
 // app.get("/user", async (req, res) => {
 //   const userEmail = req.body.emailId;
