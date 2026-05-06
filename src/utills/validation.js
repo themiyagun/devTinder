@@ -14,6 +14,16 @@ const validateSignUpData = (req) => {
   }
 };
 
+const validatePassword = (req) => {
+  const { password } = req.body;
+
+  if (!validator.isStrongPassword(password)) {
+    throw new Error(
+      "Password must be at least 8 characters long and include uppercase letters, lowercase letters, numbers, and symbols",
+    );
+  }
+};
+
 const validateProfileEditData = (req) => {
   const allowedUpdateFields = [
     "firstName",
@@ -35,4 +45,5 @@ const validateProfileEditData = (req) => {
 module.exports = {
   validateSignUpData,
   validateProfileEditData,
+  validatePassword,
 };
