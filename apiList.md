@@ -13,6 +13,6 @@
 -POST/request/review/accepted/:requestId
 -POST/request/review/rejected/:requestId
 
--GET/user/connections
 -GET/user/requests
+-GET/user/connections
 -GET/user/feeds
