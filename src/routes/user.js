@@ -54,6 +54,11 @@ userRouter.get("/feed", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
 
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    limit = limit > 50 ? 50 : limit;
+    const skip = (page - 1) * limit;
+
     //connection request nati aywa pennanna one
 
     const connectionRequests = await ConnectionRequestModel.find({
@@ -74,7 +79,9 @@ userRouter.get("/feed", userAuth, async (req, res) => {
         { _id: { $nin: Array.from(hideUsersFromFeed) } },
         { _id: { $ne: loggedInUser._id } },
       ],
-    });
+    })
+      .skip(skip)
+      .limit(limit);
 
     res.json({ data: users });
   } catch (error) {
