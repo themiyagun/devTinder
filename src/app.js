@@ -6,9 +6,11 @@ const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { userAuth } = require("./middleware/auth");
+const cors = require("cors");
 
 const app = express(); // create express js application
 
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json()); // me api eken thamai ena req eka json wlata convert krnne
 app.use(cookieParser());
 
